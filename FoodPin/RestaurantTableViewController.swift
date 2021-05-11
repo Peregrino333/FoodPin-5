@@ -21,10 +21,16 @@ class RestaurantTableViewController: UITableViewController {
         
     var restaurantTypes = ["Coffee & Tea Shop", "Cafe", "Tea House", "Austrian / Causual Drink", "French", "Bakery", "Bakery", "Chocolate", "Cafe", "American / Seafood", "American", "American", "Breakfast & Brunch", "Coffee & Tea", "Coffee & Tea", "Latin American", "Spanish", "Spanish", "Spanish", "British", "Thai"]
     
+    var restaurantIsFavorites = Array(repeating: false, count: 21)
+    
+    var restaurantIsVisited = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+    
     lazy var dataSource = configureDataSource()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        tableView.cellLayoutMarginsFollowReadableWidth = true
         
         tableView.separatorStyle = .none
         
@@ -50,6 +56,8 @@ class RestaurantTableViewController: UITableViewController {
                 cell.locationLabel.text = self.restaurantLocations[indexPath.row]
                 cell.typeLabel.text = self.restaurantTypes[indexPath.row]
                 cell.thumbnailImageView.image = UIImage(named: self.restaurantImages[indexPath.row])
+                
+                cell.accessoryType = self.restaurantIsFavorites[indexPath.row] ? .checkmark : .none
                 
                 return cell
             }
@@ -83,6 +91,8 @@ class RestaurantTableViewController: UITableViewController {
             (action:UIAlertAction!) -> Void in
             let cell = tableView.cellForRow(at: indexPath)
             cell?.accessoryType = .checkmark
+            cell?.tintColor = .systemYellow
+            self.restaurantIsFavorites[indexPath.row] = true
         })
         optionMenu.addAction(favoriteAction)
         
@@ -90,5 +100,9 @@ class RestaurantTableViewController: UITableViewController {
         
         // Display the menu
         present(optionMenu, animated: true, completion: nil)
+        
+        
+        // Deselect the row
+        tableView.deselectRow(at: indexPath, animated: false)
     }
 }
