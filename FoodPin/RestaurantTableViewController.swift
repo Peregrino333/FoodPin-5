@@ -25,6 +25,10 @@ class RestaurantTableViewController: UITableViewController {
     
     var restaurantIsVisited = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
     
+    let alreadyFavorite = "Uncheck as Favorite"
+    let checkAsFavorite = "Mark as Favorite"
+    var activeTitle = ""
+    
     lazy var dataSource = configureDataSource()
     
     override func viewDidLoad() {
@@ -73,6 +77,13 @@ class RestaurantTableViewController: UITableViewController {
         // Create an option menu as an action sheet
         let optionMenu = UIAlertController(title: nil, message: "What do you want to do?", preferredStyle: .actionSheet)
         
+        if let popoverController = optionMenu.popoverPresentationController {
+            if let cell = tableView.cellForRow(at: indexPath) {
+                popoverController.sourceView = cell
+                popoverController.sourceRect = cell.bounds
+            }
+        }
+        
         // Add actions to the menu
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
@@ -87,10 +98,26 @@ class RestaurantTableViewController: UITableViewController {
         optionMenu.addAction(reserveAction)
         
         // Mark as favorite action
-        let favoriteAction = UIAlertAction(title: "Mark as favorite", style: .default, handler: {
+        
+        let cell = tableView.cellForRow(at: indexPath)
+        if (cell?.accessoryType != .checkmark) {
+            activeTitle = checkAsFavorite
+        }
+        else {
+            activeTitle = alreadyFavorite
+        }
+        
+        let favoriteAction = UIAlertAction(title: activeTitle, style: .default, handler: {
             (action:UIAlertAction!) -> Void in
             let cell = tableView.cellForRow(at: indexPath)
-            cell?.accessoryType = .checkmark
+            
+            if (self.activeTitle == self.checkAsFavorite) {
+                cell?.accessoryType = .checkmark
+            }
+            else {
+                cell?.accessoryType = .none
+            }
+            
             cell?.tintColor = .systemYellow
             self.restaurantIsFavorites[indexPath.row] = true
         })
